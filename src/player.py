@@ -1,5 +1,6 @@
 from typing import Any
 import pygame
+from utils import import_folder
 from settings import *
 from pygame.math import Vector2
 from pygame import Rect, Surface
@@ -17,14 +18,29 @@ class Player(pygame.sprite.Sprite):
         super().__init__(group)
 
         #image setup
-        self.image: Surface = pygame.Surface((32,64))
-        self.image.fill("red")
+        self.import_assets()
+        self.status = "down_idle"
+        self.frame_index = 0
+
+        self.image: Surface = self.animations[self.status][self.frame_index]
         self.rect: Rect = self.image.get_rect(center=pos)
 
         #movement setup
         self.direction: Vector2 = pygame.math.Vector2()
         self.pos: Vector2 =  pygame.math.Vector2(self.rect.center)
         self.speed = 200
+
+    def import_assets(self):
+        self.animations = {"up": [],"down": [],"left": [],"right": [],
+						   "right_idle":[],"left_idle":[],"up_idle":[],
+                           "down_idle":[],"right_hoe":[],"left_hoe":[],
+                           "up_hoe":[],"down_hoe":[],"right_axe":[],
+                           "left_axe":[],"up_axe":[],"down_axe":[],
+						   "right_water":[],"left_water":[],"up_water":[],
+                           "down_water":[]}
+        for animation in self.animations.keys():
+            full_path = "graphics/character/" + animation
+            self.animations[animation] = import_folder(full_path)
 
     def input(self) -> None:
         """Manage the user input and set the direction bassed on it
@@ -65,9 +81,6 @@ class Player(pygame.sprite.Sprite):
         # set vertical movement
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.centery = self.pos.y
-        
-        print(self.direction)
-
 
     def update(self, dt: float) -> None:
         """Handle the input and the movement
