@@ -14,7 +14,7 @@ class Game:
         pygame.display.set_caption(GAME_NAME)
         self.clock = pygame.time.Clock()
         self.level = Level()
-    
+
     def run(self) -> None:
         """Method in charge of the game loop
         """

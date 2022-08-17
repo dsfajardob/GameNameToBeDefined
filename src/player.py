@@ -19,7 +19,7 @@ class Player(pygame.sprite.Sprite):
 
         #image setup
         self.import_assets()
-        self.status = "down_idle"
+        self.status = "down"
         self.frame_index = 0
 
         self.image: Surface = self.animations[self.status][self.frame_index]
@@ -29,6 +29,13 @@ class Player(pygame.sprite.Sprite):
         self.direction: Vector2 = pygame.math.Vector2()
         self.pos: Vector2 =  pygame.math.Vector2(self.rect.center)
         self.speed = 200
+
+    def animate(self,dt):
+        status_frames = self.animations[self.status]
+        self.frame_index += (4 * dt)
+        if self.frame_index >= len(status_frames):
+            self.frame_index = 0
+        self.image = status_frames[int(self.frame_index)]
 
     def import_assets(self):
         self.animations = {"up": [],"down": [],"left": [],"right": [],
@@ -50,19 +57,28 @@ class Player(pygame.sprite.Sprite):
         # horizontal
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.direction.y = -1 
+            self.status = "up"
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.direction.y = 1
+            self.status = "down"
         else:
             self.direction.y = 0
 
         # vertical
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.direction.x = -1
+            self.status = "left"
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.direction.x = 1
+            self.status = "right"
         else:
             self.direction.x = 0
 
+    def get_status(self):
+        if self.direction.magnitude() == 0:
+            self.status = self.status.split("_")[0] + "_idle"
+
+        ...
     def move(self, dt: float) -> None:
         """Move the player with frame rate independency
 
@@ -89,4 +105,6 @@ class Player(pygame.sprite.Sprite):
             dt (float): Time between one frame and other
         """
         self.input()
+        self.get_status()
         self.move(dt=dt)
+        self.animate(dt=dt)
