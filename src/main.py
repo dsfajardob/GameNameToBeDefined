@@ -18,7 +18,6 @@ class Game:
     def run(self) -> None:
         """Method in charge of the game loop
         """
-
         while True:
             # Check for quitting the game
             for event in pygame.event.get():
